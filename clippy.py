@@ -207,7 +207,8 @@ while True:
             continue
 
         if just_clipped == values["output_file"]:
-            if not show_custom_yesno("You didn't change the output file name.\nAre you sure you want to overwrite the file?"):
+            ans = show_custom_yesno("You didn't change the output file name.\nAre you sure you want to overwrite the file?")
+            if ans == "No" or ans is None:
                 continue
         # send values to construct ffmpeg command
         cmd = fp.construct_from_sg_values(values)

@@ -164,6 +164,10 @@ def show_custom_error(message, title="Oops!"):
     sg.popup_error(message, title=title, icon=SCISSORS_ICON)
 
 
+def show_custom_yesno(message, title="Hol up"):
+    return sg.popup_yes_no(message, title=title, icon=SCISSORS_ICON, grab_anywhere=True)
+
+
 def done_message(output_file):
     # look up file size
     try:
@@ -180,6 +184,8 @@ def done_message(output_file):
         add_string += "\n\nThis file is too big to send on Discord.\nTry lowering the resolution or FPS."
     sg.popup_ok(f"Done!{add_string}", title="Done!", icon=SCISSORS_ICON)
 
+
+just_clipped = None
 
 # Event Loop to process "events" and get the "values" of the inputs
 while True:
@@ -199,6 +205,10 @@ while True:
         if values["fps"] == "0":
             show_custom_error("FPS must be more than 0.")
             continue
+
+        if just_clipped == values["output_file"]:
+            if not show_custom_yesno("You didn't change the output file name.\nAre you sure you want to overwrite the file?"):
+                continue
         # send values to construct ffmpeg command
         cmd = fp.construct_from_sg_values(values)
         # replace ffmpeg location
@@ -284,6 +294,7 @@ while True:
         window["progressbar"].update(0)
         window["start"].update(disabled=False)
         done_message(values["output_file"])
+        just_clipped = values["output_file"]
         # break
 
     print(event)

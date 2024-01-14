@@ -1,0 +1,9 @@
+clippy.build/*
+clippy.dist/*
+clippy.onefile-build/*
+buildexport/*
+bin/ff*
+clippy.exe
+test/*
+helpers/__pycache__/*
+*.bat

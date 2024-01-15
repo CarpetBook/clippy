@@ -224,6 +224,16 @@ def done_message(output_file):
     sg.popup_ok(f"Done!{add_string}", title="Done!", icon=SCISSORS_ICON)
 
 
+def run_yielding_ffmpeg_exc(cmd, window, duration):
+    """Runs run_yielding_ffmpeg and catches RuntimeError (ffmpeg yield progress throws runtime error for some reason)."""
+    try:
+        fp.run_yielding_ffmpeg(cmd, window, duration)
+    except RuntimeError as e:
+        show_custom_error(e)
+        window.write_event_value("ffmpeg_done", "error")
+        return
+
+
 just_clipped = None
 
 # Event Loop to process "events" and get the "values" of the inputs
@@ -272,7 +282,7 @@ while True:
         # run ffmpeg command yielding progress
         duration = values["end_time_slider"] - values["start_time_slider"]
         window.perform_long_operation(
-            lambda: fp.run_yielding_ffmpeg(cmd, window, duration),
+            lambda: run_yielding_ffmpeg_exc(cmd, window, duration),
             end_key="ffmpeg_done",
         )
         # break

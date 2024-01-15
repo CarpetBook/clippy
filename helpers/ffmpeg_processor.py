@@ -36,7 +36,12 @@ def construct_from_sg_values(values):
     )
     output = ffmpeg.overwrite_output(output)
 
-    return output.compile()
+    command = output.compile()
+
+    # replace "0:a" with "0:a?" for ambiguous audio stream mapping
+    command = [x.replace("0:a", "0:a?") for x in command]
+
+    return command
 
 
 def run_yielding_ffmpeg(cmd, window, duration):

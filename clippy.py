@@ -28,6 +28,41 @@ SCISSORS_ICON = icon.SCISSORS_ICON
 
 DISCORD_LIMIT = 25 * 1024 * 1024
 
+
+def write_new_settings():
+    with open("settings.txt", "w") as f:
+        f.write("clip_loc=")
+        f.write("\n")
+        f.write(f"resolution={RES_OPTIONS[3]}")
+        f.write("\n")
+        f.write("fps=30")
+
+
+"""Read settings file."""
+try:
+    with open("settings.txt", "r") as f:
+        settings = f.read().split("\n")
+        clip_loc = settings[0].split("=")[1]
+        resolution = settings[1].split("=")[1]
+        fps = settings[2].split("=")[1]
+except Exception as e:
+    print(e)
+    write_new_settings()
+    clip_loc = ""
+    resolution = RES_OPTIONS[3]
+    fps = "30"
+
+
+def save_settings(window):
+    """Save settings to settings.txt."""
+    with open("settings.txt", "w") as f:
+        f.write(f"clip_loc={window['clip_loc'].get()}")
+        f.write("\n")
+        f.write(f"resolution={window['resolution'].get()}")
+        f.write("\n")
+        f.write(f"fps={window['fps'].get()}")
+
+
 # All the stuff inside your window.
 layout = [
     [
@@ -84,12 +119,12 @@ layout = [
                     sg.Text("Resolution"),
                     sg.Combo(
                         RES_OPTIONS,
-                        default_value=RES_OPTIONS[3],
+                        default_value=resolution,
                         key="resolution",
                         enable_events=True,
                     ),
                 ],  # default to 720p
-                [sg.Text("FPS"), sg.InputText("30", size=(5, 1), key="fps", enable_events=True)],
+                [sg.Text("FPS"), sg.InputText(fps, size=(5, 1), key="fps", enable_events=True)],
             ],
         ),
         sg.Text("", key="res_warning", text_color="red", metadata={"reso_y": 10000, "fuhpis": 1000})

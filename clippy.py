@@ -67,17 +67,20 @@ def save_settings(window):
 # All the stuff inside your window.
 layout = [
     [
-        sg.Text("File to be clipped"),
-        sg.Push(),
+        sg.Text("File to be clipped", size=(15, 1)),
         sg.InputText(key="input_file", disabled=True, enable_events=True),
         sg.FileBrowse("Browse"),
     ],
     [
-        sg.Text("Output"),
-        sg.Push(),
-        sg.InputText(key="output_file"),
-        sg.FileSaveAs(file_types=(("MP4", "*.mp4"),)),
+        sg.Text("Save folder", size=(15, 1)),
+        sg.InputText(key="clip_loc", default_text=clip_loc),
+        sg.FolderBrowse("Browse"),
     ],
+    [
+        sg.Text("File name", size=(15, 1)),
+        sg.InputText(key="output_file"),
+    ],
+    [sg.Text("")],
     [
         sg.Text("Start time:", key="start_time_label"),
         sg.InputText(
@@ -227,13 +230,17 @@ just_clipped = None
 while True:
     event, values = window.read()
     if event in (None, "cancel"):  # if user closes window or clicks cancel
+        save_settings(window)
         break
     elif event == "start":
         if values["input_file"] == "":
             show_custom_error("Please choose a file to clip using the 'Browse' button.")
             continue
+        if values["clip_loc"] == "":
+            show_custom_error("Please choose a folder to save the clipped file.")
+            continue
         if values["output_file"] == "":
-            show_custom_error("Please set an output using the 'Save As' button.")
+            show_custom_error("Please choose a file name for the clipped file.")
             continue
         if values["input_file"] == values["output_file"]:
             show_custom_error("Input and output files cannot be the same.")
@@ -297,6 +304,10 @@ while True:
         update_clip_length_text(window)
         # check resolution warning
         update_res_warning(window)
+        # set clip file name
+        filey = os.path.basename(values["input_file"])
+        filey = os.path.splitext(filey)[0]
+        window["output_file"].update(filey + "_clippy.mp4")
 
     # checking controls
     if event == "start_time_slider":
@@ -342,7 +353,10 @@ while True:
         window["status"].update(get_status_text(0, True))
         window["progressbar"].update(0)
         window["start"].update(disabled=False)
-        done_message(values["output_file"])
+        if values["ffmpeg_done"] == "error":
+            continue
+        joined_path = os.path.join(values["clip_loc"], values["output_file"])
+        done_message(joined_path)
         just_clipped = values["output_file"]
         # break
 

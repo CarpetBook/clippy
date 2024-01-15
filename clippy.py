@@ -27,6 +27,8 @@ FFMPEG_LOC = "bin/ffmpeg"
 FFPROBE_LOC = "bin/ffprobe"
 SCISSORS_ICON = icon.SCISSORS_ICON
 
+SPECIAL_CHAR_CHECK = r"[^a-zA-Z0-9_\-\. ]"
+
 DISCORD_LIMIT = 25 * 1024 * 1024
 
 
@@ -258,7 +260,7 @@ while True:
         if values["fps"] == "0":
             show_custom_error("FPS must be more than 0.")
             continue
-        if re.findall(r"[^a-zA-Z0-9_\-\.]", values["output_file"]):
+        if re.findall(SPECIAL_CHAR_CHECK, values["output_file"]):
             show_custom_error("File name cannot contain special characters.")
             continue
 

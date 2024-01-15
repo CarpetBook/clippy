@@ -3,6 +3,7 @@ import ffmpeg
 from subprocess import CREATE_NO_WINDOW
 
 import os
+import re
 import humanize
 
 from helpers import timecalc as tc
@@ -240,9 +241,9 @@ while True:
         if values["fps"] == "0":
             show_custom_error("FPS must be more than 0.")
             continue
-
-        if just_clipped == values["output_file"]:
-            ans = show_custom_yesno("You didn't change the output file name.\nAre you sure you want to overwrite the file?")
+        if re.findall(r"[^a-zA-Z0-9_\-\.]", values["output_file"]):
+            show_custom_error("File name cannot contain special characters.")
+            continue
             if ans == "No" or ans is None:
                 continue
         # send values to construct ffmpeg command

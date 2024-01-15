@@ -244,8 +244,20 @@ while True:
         if re.findall(r"[^a-zA-Z0-9_\-\.]", values["output_file"]):
             show_custom_error("File name cannot contain special characters.")
             continue
+
+        was_just_clipped = just_clipped == values["output_file"]
+        already_exists = os.path.exists(os.path.join(values["clip_loc"], values["output_file"]))
+        if was_just_clipped or already_exists:
+            ans = show_custom_yesno("This file already exists in the save folder.\nAre you sure you want to overwrite the file?")
             if ans == "No" or ans is None:
                 continue
+
+        # check if file name has .mp4 extension
+        # if not, add it
+        if not values["output_file"].endswith(".mp4"):
+            values["output_file"] += ".mp4"
+        # correct output file path with clip_loc
+        values["output_file"] = os.path.join(values["clip_loc"], values["output_file"])
         # send values to construct ffmpeg command
         cmd = fp.construct_from_sg_values(values)
         # replace ffmpeg location

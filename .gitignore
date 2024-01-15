@@ -7,3 +7,5 @@ clippy.exe
 test/*
 helpers/__pycache__/*
 *.bat
+settings.txt
+cur-ver.txt

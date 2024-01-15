@@ -18,8 +18,8 @@ def construct_from_sg_values(values):
 
     input = ffmpeg.input(
         values["input_file"],
-        ss=values["start_time_input"],
-        to=values["end_time_input"],
+        ss=values["start_time_slider"],
+        to=values["end_time_slider"],
     )
 
     audio = input.audio

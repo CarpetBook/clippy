@@ -1,5 +1,5 @@
-CURRENT = "1.1.4"
-CHANGES = "Added error handling for missing the bin folder.\nFixed an error when clipping a video with a resolution not divisible by 2."
+CURRENT = "1.1.5"
+CHANGES = "Added error handling for missing binaries.\nFixed an error when clipping a video with a resolution not divisible by 2."
 
 """
 1.0 = first clippy release

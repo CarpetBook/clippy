@@ -27,7 +27,7 @@ FFMPEG_LOC = "bin/ffmpeg"
 FFPROBE_LOC = "bin/ffprobe"
 SCISSORS_ICON = icon.SCISSORS_ICON
 
-SPECIAL_CHAR_CHECK = r"[^a-zA-Z0-9_\-\. ]"
+SPECIAL_CHAR_CHECK = r"[<>:""/\\|?*]"
 
 DISCORD_LIMIT = 25 * 1024 * 1024
 

@@ -26,7 +26,7 @@ def construct_from_sg_values(values):
     video = input.video
 
     scale = video.filter(
-        "scale", -1, reso_y
+        "scale", -2, reso_y
     )  # -1 means keep aspect ratio, reso_y is progressive fields (aka 1080p for example)
     output = ffmpeg.output(
         scale,

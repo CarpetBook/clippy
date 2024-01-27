@@ -10,6 +10,7 @@ import json
 from helpers import timecalc as tc
 from helpers import ffmpeg_processor as fp
 from helpers import icon
+from helpers.about_window import open_about_window
 
 sg.theme("BrightColors")  # Add too much color
 
@@ -165,22 +166,6 @@ layout = [
 
 # Create the Window
 window = sg.Window("Clippy", layout, icon=SCISSORS_ICON, finalize=True)
-
-
-def open_about_window():
-    from helpers import about_window
-
-    _about = sg.Window(
-        "About Clippy",
-        about_window.about_layout,
-        icon=icon.SCISSORS_ICON,
-        finalize=True,
-    )
-
-    while True:
-        event, values = _about.read()
-        if event == sg.WIN_CLOSED:
-            break
 
 
 def get_clip_length_text(start_time, end_time):

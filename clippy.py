@@ -48,6 +48,17 @@ try:
         clip_loc = settings[0].split("=")[1]
         resolution = settings[1].split("=")[1]
         fps = settings[2].split("=")[1]
+
+    # check if all are valid
+    if not os.path.exists(clip_loc):
+        clip_loc = ""
+
+    if resolution not in RES_OPTIONS:
+        resolution = RES_OPTIONS[3]
+
+    if not fps.isdigit():
+        fps = "30"
+
 except Exception as e:
     print(e)
     write_new_settings()
@@ -130,10 +141,18 @@ layout = [
                         enable_events=True,
                     ),
                 ],  # default to 720p
-                [sg.Text("FPS"), sg.InputText(fps, size=(5, 1), key="fps", enable_events=True)],
+                [
+                    sg.Text("FPS"),
+                    sg.InputText(fps, size=(5, 1), key="fps", enable_events=True),
+                ],
             ],
         ),
-        sg.Text("", key="res_warning", text_color="red", metadata={"reso_y": 10000, "fuhpis": 1000})
+        sg.Text(
+            "",
+            key="res_warning",
+            text_color="red",
+            metadata={"reso_y": 10000, "fuhpis": 1000},
+        ),
     ],
     [
         sg.Button(
@@ -193,11 +212,16 @@ def update_res_warning(window):
     if selected_reso_y > source_reso_y:
         builder += f"{selected_reso_y}p is higher than source {source_reso_y}p.\n"
     if selected_fuhpis > source_fuhpis:
-        builder += f"{selected_fuhpis:g} FPS is higher than source video ({source_fuhpis:g})."
+        builder += (
+            f"{selected_fuhpis:g} FPS is higher than source video ({source_fuhpis:g})."
+        )
     if builder == "":
         window["res_warning"].update("")
     else:
-        builder = "Export settings are not ideal.\nThese settings may cause large file sizes:\n" + builder
+        builder = (
+            "Export settings are not ideal.\nThese settings may cause large file sizes:\n"
+            + builder
+        )
         window["res_warning"].update(builder)
 
 
@@ -265,9 +289,13 @@ while True:
             continue
 
         was_just_clipped = just_clipped == values["output_file"]
-        already_exists = os.path.exists(os.path.join(values["clip_loc"], values["output_file"]))
+        already_exists = os.path.exists(
+            os.path.join(values["clip_loc"], values["output_file"])
+        )
         if was_just_clipped or already_exists:
-            ans = show_custom_yesno("This file already exists in the save folder.\nAre you sure you want to overwrite the file?")
+            ans = show_custom_yesno(
+                "This file already exists in the save folder.\nAre you sure you want to overwrite the file?"
+            )
             if ans == "No" or ans is None:
                 continue
 
@@ -292,7 +320,11 @@ while True:
     # update slider ranges on input file change
     if event == "input_file":
         try:
-            probe = ffmpeg.probe(values["input_file"], cmd=FFPROBE_LOC, popen_kwargs={"creationflags": CREATE_NO_WINDOW})
+            probe = ffmpeg.probe(
+                values["input_file"],
+                cmd=FFPROBE_LOC,
+                popen_kwargs={"creationflags": CREATE_NO_WINDOW},
+            )
         except ffmpeg.Error as e:
             sg.popup_error(e.stderr)
             continue

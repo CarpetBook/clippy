@@ -5,6 +5,7 @@ from subprocess import CREATE_NO_WINDOW
 import os
 import re
 import humanize
+import json
 
 from helpers import timecalc as tc
 from helpers import ffmpeg_processor as fp
@@ -32,49 +33,42 @@ SPECIAL_CHAR_CHECK = r"[<>:""/\\|?*]"
 DISCORD_LIMIT = 25 * 1024 * 1024
 
 
+builtindefaults = {
+    "clip_loc": "",
+    "resolution": RES_OPTIONS[3],
+    "fps": "30",
+}
+
+
 def write_new_settings():
-    with open("settings.txt", "w") as f:
-        f.write("clip_loc=")
-        f.write("\n")
-        f.write(f"resolution={RES_OPTIONS[3]}")
-        f.write("\n")
-        f.write("fps=30")
+    with open("settings.json", "w") as f:
+        f.write(json.dumps(builtindefaults, indent=4))
 
 
 """Read settings file."""
 try:
-    with open("settings.txt", "r") as f:
-        settings = f.read().split("\n")
-        clip_loc = settings[0].split("=")[1]
-        resolution = settings[1].split("=")[1]
-        fps = settings[2].split("=")[1]
+    with open("settings.json", "r") as f:
+        defaults = json.loads(f.read())
 
     # check if all are valid
-    if not os.path.exists(clip_loc):
-        clip_loc = ""
+    if not os.path.exists(defaults.get("clip_loc", "")):
+        defaults["clip_loc"] = ""
 
-    if resolution not in RES_OPTIONS:
-        resolution = RES_OPTIONS[3]
+    if defaults.get("resolution") not in RES_OPTIONS:
+        defaults["resolution"] = RES_OPTIONS[3]
 
-    if not fps.isdigit():
-        fps = "30"
-
+    if not defaults.get("fps").isdigit():
+        defaults["fps"] = "30"
 except Exception as e:
     print(e)
     write_new_settings()
-    clip_loc = ""
-    resolution = RES_OPTIONS[3]
-    fps = "30"
+    defaults = builtindefaults
 
 
-def save_settings(window):
-    """Save settings to settings.txt."""
-    with open("settings.txt", "w") as f:
-        f.write(f"clip_loc={window['clip_loc'].get()}")
-        f.write("\n")
-        f.write(f"resolution={window['resolution'].get()}")
-        f.write("\n")
-        f.write(f"fps={window['fps'].get()}")
+def save_settings(values):
+    """Save settings to settings.json."""
+    with open("settings.json", "w") as f:
+        f.write(json.dumps(values, indent=4))
 
 
 # All the stuff inside your window.
@@ -86,7 +80,7 @@ layout = [
     ],
     [
         sg.Text("Save folder", size=(15, 1)),
-        sg.InputText(key="clip_loc", default_text=clip_loc),
+        sg.InputText(key="clip_loc", default_text=defaults.get("clip_loc")),
         sg.FolderBrowse("Browse"),
     ],
     [
@@ -136,14 +130,14 @@ layout = [
                     sg.Text("Resolution"),
                     sg.Combo(
                         RES_OPTIONS,
-                        default_value=resolution,
+                        default_value=defaults.get("resolution"),
                         key="resolution",
                         enable_events=True,
                     ),
                 ],  # default to 720p
                 [
                     sg.Text("FPS"),
-                    sg.InputText(fps, size=(5, 1), key="fps", enable_events=True),
+                    sg.InputText(defaults.get("fps"), size=(5, 1), key="fps", enable_events=True),
                 ],
             ],
         ),

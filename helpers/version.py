@@ -1,5 +1,7 @@
-CURRENT = "1.1.5"
-CHANGES = "Added error handling for missing binaries.\nFixed an error when clipping a video with a resolution not divisible by 2."
+CURRENT = "1.1.6"
+CHANGES = """Added error handling for missing binaries.
+Fixed an error when clipping a video with a resolution not divisible by 2.
+Fixed a fix for the FPS box. FPS box now only accepts numbers."""
 
 """
 1.0 = first clippy release
@@ -13,6 +15,7 @@ todo: the settings saving and loading is really really bad. very hard coded. ref
 1.1.3 = fixed the saving; uses json like yts now
 1.1.4 = checked for non-numbers in fps on start, but not on event... fixed to ignore on letters in fps; converted changelog to py file to compile into exe
 1.1.5 = fixed scaling in ffmpeg when resolution is not divisible by 2; added a check for ffmpeg/probe not being found
+1.1.6 = forgot to make it stop if fps is not a digit
 
 todo: add automatic updates so i don't have to send a whole file over discord to people every single time
 """

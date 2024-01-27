@@ -322,6 +322,7 @@ while True:
             continue
         if not values["fps"].isdigit():
             show_custom_error("FPS must be a number.")
+            continue
         if re.findall(SPECIAL_CHAR_CHECK, values["output_file"]):
             show_custom_error("File name cannot contain special characters.")
             continue

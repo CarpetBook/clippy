@@ -25,8 +25,8 @@ RES_OPTIONS = [
     "144p",
 ]
 
-FFMPEG_LOC = "bin/ffmpeg"
-FFPROBE_LOC = "bin/ffprobe"
+ffmpeg_loc = "bin/ffmpeg.exe"
+ffprobe_loc = "bin/ffprobe.exe"
 SCISSORS_ICON = icon.SCISSORS_ICON
 
 SPECIAL_CHAR_CHECK = r"[<>:""/\\|?*]"
@@ -260,8 +260,37 @@ def run_yielding_ffmpeg_exc(cmd, window, duration):
         return
 
 
+def check_for_ffmpeg():
+    global ffmpeg_loc
+    if os.path.exists(ffmpeg_loc):
+        return
+    if os.path.exists("ffmpeg.exe"):
+        ffmpeg_loc = "ffmpeg.exe"
+        return
+    show_custom_error("Couldn't find ffmpeg.exe. Please make sure you extracted the 'bin' folder into the same folder as clippy.exe.")
+    exit(1)
+
+
+def check_for_ffprobe():
+    global ffprobe_loc
+    if os.path.exists(ffprobe_loc):
+        return
+    if os.path.exists("ffprobe.exe"):
+        ffprobe_loc = "ffprobe.exe"
+        return
+    show_custom_error("Couldn't find ffprobe.exe. Please make sure you extracted the 'bin' folder into the same folder as clippy.exe.")
+    exit(1)
+
+
+def check_for_fftools():
+    check_for_ffmpeg()
+    check_for_ffprobe()
+
+
 just_clipped = None
 last_values = defaults
+
+check_for_fftools()
 
 # Event Loop to process "events" and get the "values" of the inputs
 while True:
@@ -317,7 +346,7 @@ while True:
         # send values to construct ffmpeg command
         cmd = fp.construct_from_sg_values(values)
         # replace ffmpeg location
-        cmd[0] = FFMPEG_LOC
+        cmd[0] = ffmpeg_loc
         # run ffmpeg command yielding progress
         duration = values["end_time_slider"] - values["start_time_slider"]
         window.perform_long_operation(
@@ -331,7 +360,7 @@ while True:
         try:
             probe = ffmpeg.probe(
                 values["input_file"],
-                cmd=FFPROBE_LOC,
+                cmd=ffprobe_loc,
                 popen_kwargs={"creationflags": CREATE_NO_WINDOW},
             )
         except ffmpeg.Error as e:

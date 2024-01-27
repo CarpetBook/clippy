@@ -202,7 +202,10 @@ def get_status_text(progress, done=False):
 def update_res_warning(window):
     _, values = window.read(timeout=1)  # have to update the values
     selected_reso_y = int(values["resolution"].split("p")[0])
-    selected_fuhpis = int(values["fps"])
+    try:
+        selected_fuhpis = int(values["fps"])
+    except ValueError:
+        selected_fuhpis = 0
     source_reso_y = window["res_warning"].metadata["reso_y"]
     source_fuhpis = window["res_warning"].metadata["fuhpis"]
     builder = ""
@@ -272,6 +275,9 @@ while True:
         if values["clip_loc"] == "":
             show_custom_error("Please choose a folder to save the clipped file.")
             continue
+        if not os.path.isdir(values["clip_loc"]):
+            show_custom_error("Save folder does not exist.")
+            continue
         if values["output_file"] == "":
             show_custom_error("Please choose a file name for the clipped file.")
             continue
@@ -281,6 +287,8 @@ while True:
         if values["fps"] == "0":
             show_custom_error("FPS must be more than 0.")
             continue
+        if not values["fps"].isdigit():
+            show_custom_error("FPS must be a number.")
         if re.findall(SPECIAL_CHAR_CHECK, values["output_file"]):
             show_custom_error("File name cannot contain special characters.")
             continue

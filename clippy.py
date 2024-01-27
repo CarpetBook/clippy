@@ -261,12 +261,16 @@ def run_yielding_ffmpeg_exc(cmd, window, duration):
 
 
 just_clipped = None
+last_values = defaults
 
 # Event Loop to process "events" and get the "values" of the inputs
 while True:
     event, values = window.read()
+    print(values)
+    if values is not None:
+        last_values = values
     if event in (None, "cancel"):  # if user closes window or clicks cancel
-        save_settings(window)
+        save_settings(last_values)
         break
     elif event == "start":
         if values["input_file"] == "":

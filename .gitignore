@@ -9,3 +9,4 @@ helpers/__pycache__/*
 *.bat
 settings.txt
 cur-ver.txt
+settings.json

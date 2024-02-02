@@ -54,5 +54,7 @@ def run_yielding_ffmpeg(cmd, window, duration):
         int: Progress percentage.
     """
     ff = fpy.FfmpegProgress(cmd)
-    for progress in ff.run_command_with_progress(popen_kwargs={"creationflags": CREATE_NO_WINDOW}, duration_override=duration):
+    for progress in ff.run_command_with_progress(
+        popen_kwargs={"creationflags": CREATE_NO_WINDOW}, duration_override=duration
+    ):
         window.write_event_value("ffmpeg_progress", progress)

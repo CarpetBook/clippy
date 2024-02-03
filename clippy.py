@@ -354,6 +354,76 @@ def run_yielding_ffmpeg_exc(cmd, window, duration):
         return
 
 
+def is_reso_valid(reso):
+    """Check if resolution choice is valid. Should always return True."""
+    # wait, this should always return valid? you can't type something else
+    return reso in RES_OPTIONS
+
+
+def is_fps_valid(fps):
+    """Check if FPS is valid. Return FPS as float if OK. Return False if not."""
+    # fps is float
+    try:
+        return float(fps)
+    except Exception:
+        return False
+
+
+def is_time_valid(time):
+    """Check if time is valid."""
+    try:
+        time = tc.get_sec(time)
+        return time
+    except ValueError:
+        return False
+
+
+def start_data_validation(values):
+    # text fields
+    if values["input_file"] == "":
+        show_custom_error("Please choose a file to clip using the 'Browse' button.")
+        return False
+    if values["clip_loc"] == "":
+        show_custom_error("Please choose a folder to save the clipped file.")
+        return False
+    if not os.path.isdir(values["clip_loc"]):
+        show_custom_error("Save folder does not exist.")
+        return False
+    if values["output_file"] == "":
+        show_custom_error("Please choose a file name for the clipped file.")
+        return False
+    if values["input_file"] == values["output_file"]:
+        show_custom_error("Input and output files cannot be the same.")
+        return False
+    if re.findall(SPECIAL_CHAR_CHECK, values["output_file"]):
+        show_custom_error("File name cannot contain special characters.")
+        return False
+
+    # fps field
+    if values["fps"] == "0":
+        show_custom_error("FPS must be more than 0.")
+        return False
+    if not is_fps_valid(values["fps"]):
+        show_custom_error("FPS must be a number.")
+        return False
+
+    # resolution field; shouldn't ever trigger
+    if values["resolution"] not in RES_OPTIONS:
+        show_custom_error("Invalid resolution.")
+        return False
+
+    # time fields
+    start_time = is_time_valid(values["start_time_input"])
+    end_time = is_time_valid(values["end_time_input"])
+    if start_time is False:
+        show_custom_error("Couldn't parse start time.")
+        return False
+    if end_time is False:
+        show_custom_error("Couldn't parse end time.")
+        return False
+    return True
+
+
 def check_for_ffmpeg():
     global ffmpeg_loc
     if os.path.exists(ffmpeg_loc):

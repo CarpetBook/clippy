@@ -12,6 +12,8 @@ from helpers import ffmpeg_processor as fp
 from helpers import icon
 from helpers.about_window import open_about_window
 
+from helpers.tooltips import tooltip
+
 sg.theme("BrightColors")  # Add too much color
 
 RES_OPTIONS = [

@@ -31,6 +31,13 @@ RES_OPTIONS = [
     "144p",
 ]
 
+AUD_CONTAINERS = [
+    "mp3",
+    "wav",
+    "flac",
+    "ogg",
+]
+
 ffmpeg_loc = "bin/ffmpeg.exe"
 ffprobe_loc = "bin/ffprobe.exe"
 SCISSORS_ICON = icon.SCISSORS_ICON

@@ -1,13 +1,17 @@
-CURRENT = "1.1.6"
+CURRENT = "1.2.0"
 CHANGES = """
-Check for special characters in filename now obeys Windows filename rules.
+(1.1.6) Check for special characters in filename now obeys Windows filename rules.
 Added this About window.
 Refactored settings file save/load.
 Saving is more robust on window close.
 Fixed crash when non-numeric characters typed in FPS box.
 Fixed an error when clipping a video with a resolution not divisible by 2.
 Added error handling for missing binaries.
-Fixed the previous fix for the FPS box. FPS box now only accepts numbers."""
+Fixed the previous fix for the FPS box. FPS box now only accepts numbers.
+
+(1.2.0) Added support for clipping audio files.
+Refactored data validation and main event loop.
+Added auto resolution/FPS button."""
 
 """
 1.0 = first clippy release
@@ -23,6 +27,7 @@ todo: the settings saving and loading is really really bad. very hard coded. ref
 1.1.5 = fixed scaling in ffmpeg when resolution is not divisible by 2; added a check for ffmpeg/probe not being found
 1.1.6 = forgot to make it stop if fps is not a digit
 todo: maybe make resolution/fps check adjust the settings to the most ideal for the current file
+1.2.0 = added support for audio files; refactored main loop and data validation; added auto resolution button; refactor ffprobe process
 
 todo: add automatic updates so i don't have to send a whole file over discord to people every single time
 """

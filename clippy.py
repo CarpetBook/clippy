@@ -42,7 +42,7 @@ ffmpeg_loc = "bin/ffmpeg.exe"
 ffprobe_loc = "bin/ffprobe.exe"
 SCISSORS_ICON = icon.SCISSORS_ICON
 
-SPECIAL_CHAR_CHECK = r"[<>:""/\\|?*]"
+SPECIAL_CHAR_CHECK = r"[<>:" "/\\|?*]"
 
 DISCORD_LIMIT = 25 * 1024 * 1024
 
@@ -184,6 +184,7 @@ layout = [
                     # ),
                     # sg.FileBrowse("Browse", key="browse_image", visible=False),
                 ],
+                [sg.Button("Auto", key="auto_res")],
             ],
         ),
         sg.Text(
@@ -260,7 +261,9 @@ def update_res_warning(window):
     if selected_reso_y > source_reso_y:
         builder += f"{selected_reso_y}p is higher than source {source_reso_y}p.\n"
     if selected_fps > source_fps:
-        builder += f"{selected_fps:g} FPS is higher than source video ({source_fps:g})."
+        builder += (
+            f"{selected_fps:g} FPS is higher than source video ({source_fps:g})."
+        )
     if builder == "":
         window["res_warning"].update("")
     else:
@@ -319,8 +322,40 @@ def update_extension_on_format(window, values):
         )
         return
 
+
+def auto_resolution_fps(window, values):
+    """Solve for best resolution and FPS according to the input file."""
+    # get reso_y and fps
+    source_reso = window["input_file"].metadata.get("reso_y")
+    source_fps = window["input_file"].metadata.get("fps")
+
+    # compare to current selection
+    cur_reso = window["resolution"].get()
+
+    # validate
+    is_reso_valid(cur_reso)
+    new_fps = is_fps_valid(source_fps)
+
+    # solve
+    # reverse reso order to start from least to highest
+    resos = [int(res.split("p")[0]) for res in RES_OPTIONS[::-1]]
+    for reso in resos:  # jeff resos
+        if reso >= source_reso:
+            # pick
+            reso_string = f"{reso}p"
+            if reso == 2160:
+                reso_string += " (4K)"
+            elif reso == 1440:
+                reso_string += " (2K)"
+            window["resolution"].update(reso_string)
+            break
+
+    # set fps
+    window["fps"].update(new_fps)
+
+
 def show_custom_error(message, title="Oops!"):
-    sg.popup_error(message, title=title, icon=SCISSORS_ICON)
+    sg.popup(message, title=title, icon=SCISSORS_ICON)
 
 
 def show_custom_yesno(message, title="Hol up"):
@@ -431,7 +466,9 @@ def check_for_ffmpeg():
     if os.path.exists("ffmpeg.exe"):
         ffmpeg_loc = "ffmpeg.exe"
         return
-    show_custom_error("Couldn't find ffmpeg.exe. Please make sure you extracted the 'bin' folder into the same folder as clippy.exe.")
+    show_custom_error(
+        "Couldn't find ffmpeg.exe. Please make sure you extracted the 'bin' folder into the same folder as clippy.exe."
+    )
     exit(1)
 
 
@@ -442,7 +479,9 @@ def check_for_ffprobe():
     if os.path.exists("ffprobe.exe"):
         ffprobe_loc = "ffprobe.exe"
         return
-    show_custom_error("Couldn't find ffprobe.exe. Please make sure you extracted the 'bin' folder into the same folder as clippy.exe.")
+    show_custom_error(
+        "Couldn't find ffprobe.exe. Please make sure you extracted the 'bin' folder into the same folder as clippy.exe."
+    )
     exit(1)
 
 
@@ -625,6 +664,11 @@ def main_app():
             done_message(joined_path)
             just_clipped = values["output_file"] + "." + values["export_container"]
             # break
+
+        # if auto res button is clicked
+        if event == "auto_res":
+            auto_resolution_fps(window, values)
+            update_res_warning(window)
 
         # if audio_to_video_check is checked
         if event == "audio_to_video_check":

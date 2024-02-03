@@ -10,3 +10,5 @@ helpers/__pycache__/*
 settings.txt
 cur-ver.txt
 settings.json
+
+latest-release-env/*

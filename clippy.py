@@ -16,6 +16,10 @@ from helpers.tooltips import tooltip
 
 sg.theme("BrightColors")  # Add too much color
 
+
+DEBUG = False
+
+
 RES_OPTIONS = [
     "2160p (4K)",
     "1440p (2K)",
@@ -195,6 +199,7 @@ layout = [
         sg.Push(),
         sg.Button("?", key="about"),
     ],
+    # [sg.Button("Toggle audio or video export settings", key="toggle_export"), sg.Button("Toggle attach image", key="toggle_attach_image")],
 ]
 
 # Create the Window
@@ -373,9 +378,15 @@ just_clipped = None
 last_values = defaults
 input_audio_only_or_extract_audio = False
 
+flipflop1 = False
+flipflop2 = False
+
 
 def main_app():
     global just_clipped, last_values, input_audio_only_or_extract_audio
+    # debug thingies
+    global flipflop1, flipflop2
+
     # main window event loop
     while True:
         event, values = window.read()
@@ -552,8 +563,14 @@ def main_app():
         if event == "about":
             open_about_window()
 
-    print(event)
-    print(values)
+        # debug events
+        if event == "toggle_export":
+            flipflop1 = not flipflop1
+            toggle_export_options(window, flipflop1)
+
+        if event == "toggle_attach_image":
+            flipflop2 = not flipflop2
+            window["audio_to_video_check"].update(flipflop2)
 
         print(event)
         print(values)

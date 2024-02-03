@@ -1,11 +1,11 @@
 import PySimpleGUI as sg
-import ffmpeg
-from subprocess import CREATE_NO_WINDOW
 
 import os
 import re
 import humanize
 import json
+
+from ffmpeg import Error as FfmpegError
 
 from helpers import timecalc as tc
 from helpers import ffmpeg_processor as fp
@@ -146,7 +146,7 @@ layout = [
             "",
             key="res_warning",
             text_color="red",
-            metadata={"reso_y": 10000, "fuhpis": 1000},
+            metadata={"reso_y": 10000, "fps": 1000},
         ),
     ],
     [
@@ -203,24 +203,24 @@ def update_res_warning(window):
     _, values = window.read(timeout=1)  # have to update the values
     selected_reso_y = int(values["resolution"].split("p")[0])
     try:
-        selected_fuhpis = int(values["fps"])
+        selected_fps = int(values["fps"])
     except ValueError:
-        selected_fuhpis = 0
+        selected_fps = 0
     source_reso_y = window["res_warning"].metadata["reso_y"]
-    source_fuhpis = window["res_warning"].metadata["fuhpis"]
+    source_fps = window["res_warning"].metadata["fps"]
+    if source_reso_y is None or source_fps is None:
+        window["res_warning"].update("")
+        return
     builder = ""
     if selected_reso_y > source_reso_y:
         builder += f"{selected_reso_y}p is higher than source {source_reso_y}p.\n"
-    if selected_fuhpis > source_fuhpis:
-        builder += (
-            f"{selected_fuhpis:g} FPS is higher than source video ({source_fuhpis:g})."
-        )
+    if selected_fps > source_fps:
+        builder += f"{selected_fps:g} FPS is higher than source video ({source_fps:g})."
     if builder == "":
         window["res_warning"].update("")
     else:
         builder = (
-            "Export settings are not ideal.\nThese settings may cause large file sizes:\n"
-            + builder
+            "Export settings are not ideal.\nThese settings may cause large file sizes:\n" + builder  # fmt: skip
         )
         window["res_warning"].update(builder)
 

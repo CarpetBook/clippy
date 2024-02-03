@@ -100,7 +100,7 @@ def get_file_info(file, ffprobe_loc):
             file,
             cmd=ffprobe_loc,
             popen_kwargs={"creationflags": CREATE_NO_WINDOW},
-            v="error"
+            v="error",
         )
     except ffmpeg.Error as e:
         raise e

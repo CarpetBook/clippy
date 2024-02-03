@@ -261,9 +261,7 @@ def update_res_warning(window):
     if selected_reso_y > source_reso_y:
         builder += f"{selected_reso_y}p is higher than source {source_reso_y}p.\n"
     if selected_fps > source_fps:
-        builder += (
-            f"{selected_fps:g} FPS is higher than source video ({source_fps:g})."
-        )
+        builder += f"{selected_fps:g} FPS is higher than source video ({source_fps:g})."
     if builder == "":
         window["res_warning"].update("")
     else:

@@ -1,7 +1,8 @@
 import PySimpleGUI as sg
 
 import os
-import sys
+
+# import sys
 import re
 import humanize
 import json
@@ -13,7 +14,7 @@ from helpers import ffmpeg_processor as fp
 from helpers import icon
 from helpers.about_window import open_about_window
 
-from helpers.tooltips import tooltip
+# from helpers.tooltips import tooltip
 
 # import GPUtil
 # gputil is OLD and unmaintained

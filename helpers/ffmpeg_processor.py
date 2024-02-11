@@ -22,8 +22,14 @@ def construct_from_sg_values(values):
     """
     reso = values["resolution"]
     reso_y = reso.split("p")[0]
-    fuhpis = values["fps"]
+    fps = values["fps"]
     audio_only = values["audio_only"]
+    enc = values["encoder_combo"]
+
+    if "CPU" in enc:
+        enc = "libx264"
+    elif "NVENC" in enc:
+        enc = "h264_nvenc"
 
     input = ffmpeg.input(
         values["input_file"],
@@ -45,7 +51,7 @@ def construct_from_sg_values(values):
             scale,
             audio,
             values["output_file"],
-            **{"c:v": "libx264", "r": fuhpis},
+            **{"c:v": enc, "r": fps},
         )
     else:
         output = ffmpeg.output(

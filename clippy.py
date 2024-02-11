@@ -15,18 +15,32 @@ from helpers.about_window import open_about_window
 
 from helpers.tooltips import tooltip
 
-import GPUtil
+# import GPUtil
+# gputil is OLD and unmaintained
 
 sg.theme("BrightColors")  # Add too much color
 
 DEBUG = False
 
+import subprocess
+
+
+def is_gpu_available():
+    try:
+        # Try running 'nvidia-smi' - it should run successfully if NVIDIA drivers are installed and a GPU is present.
+        subprocess.check_output(
+            ["nvidia-smi"], creationflags=subprocess.CREATE_NO_WINDOW
+        )
+        return True
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        # If 'nvidia-smi' is not found or any error occurs while trying to run it, assume no GPU is available.
+        return False
+
 
 nvenc_enabled = False
 try:
     # gpu detection for nvenc
-    gpu = GPUtil.getGPUs()
-    if any(gpu):
+    if is_gpu_available():
         nvenc_enabled = True
     if DEBUG:
         sg.popup_auto_close("Detected a GPU.")

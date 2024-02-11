@@ -4,5 +4,3 @@ ffmpeg
 ffmpeg_progress_yield
 
 PySimpleGUI
-
-gputil

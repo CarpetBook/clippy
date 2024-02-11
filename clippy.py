@@ -405,7 +405,7 @@ def show_custom_error(message, title="Oops!"):
 
 
 def show_custom_yesno(message, title="Hol up"):
-    return sg.popup_yes_no(message, title=title, icon=SCISSORS_ICON, grab_anywhere=True)
+    return sg.popup_yes_no(message, title=title, icon=SCISSORS_ICON)
 
 
 def done_message(output_file):
@@ -422,7 +422,14 @@ def done_message(output_file):
         add_string = ""
     elif not fits_on_discord:
         add_string += "\n\nThis file is too big to send on Discord.\nTry lowering the resolution or FPS."
-    sg.popup_ok(f"Done!{add_string}", title="Done!", icon=SCISSORS_ICON)
+    sg.popup_ok(
+        f"Done!{add_string}",
+        title="Done!",
+        icon=SCISSORS_ICON,
+        auto_close=True,
+        auto_close_duration=5,
+        non_blocking=True,
+    )
 
 
 def run_yielding_ffmpeg_exc(cmd, window, duration):

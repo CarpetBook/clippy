@@ -1,9 +1,10 @@
-CURRENT = "1.2.1"
+CURRENT = "1.2.2"
 CHANGES = """
 (1.2.0) Added support for clipping audio files.
 Refactored data validation and main event loop.
 Added auto resolution/FPS button.
 Added GPU detection and encoder choice for NVENC.
+Make "Done!" message box go away on its own.
 
 (1.1.6) Check for special characters in filename now obeys Windows filename rules.
 Added this About window.

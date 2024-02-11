@@ -1,6 +1,7 @@
 import PySimpleGUI as sg
 
 import os
+import sys
 import re
 import humanize
 import json
@@ -14,10 +15,23 @@ from helpers.about_window import open_about_window
 
 from helpers.tooltips import tooltip
 
+import GPUtil
+
 sg.theme("BrightColors")  # Add too much color
 
-
 DEBUG = False
+
+
+nvenc_enabled = False
+try:
+    # gpu detection for nvenc
+    gpu = GPUtil.getGPUs()
+    if any(gpu):
+        nvenc_enabled = True
+    if DEBUG:
+        sg.popup_auto_close("Detected a GPU.")
+except Exception as e:
+    sg.popup_non_blocking(f"Failed to detect GPUs in system.\n{e}")
 
 
 RES_OPTIONS = [
@@ -36,6 +50,11 @@ AUD_CONTAINERS = [
     "wav",
     "flac",
     "ogg",
+]
+
+ENCODER_CHOICE = [
+    "CPU (slow, small file)",
+    "NVENC (fast, big file)",
 ]
 
 ffmpeg_loc = "bin/ffmpeg.exe"
@@ -184,6 +203,15 @@ layout = [
                     # ),
                     # sg.FileBrowse("Browse", key="browse_image", visible=False),
                 ],
+                [
+                    sg.Text("Encoder", key="encoder_label", visible=nvenc_enabled),
+                    sg.Combo(
+                        ENCODER_CHOICE,
+                        default_value=ENCODER_CHOICE[0],
+                        key="encoder_combo",
+                        visible=nvenc_enabled,
+                    ),
+                ],
                 [sg.Button("Auto", key="auto_res")],
             ],
         ),
@@ -273,11 +301,16 @@ def update_res_warning(window):
 
 def toggle_export_options(window, audio_only):
     """Toggle export options."""
+    global nvenc_enabled
     # hide resolution and fps if audio
     window["reso_label"].update(visible=not audio_only)
     window["resolution"].update(visible=not audio_only)
     window["fps_label"].update(visible=not audio_only)
     window["fps"].update(visible=not audio_only)
+
+    # show encoder choice only if nvenc is enabled
+    window["encoder_label"].update(visible=not audio_only and nvenc_enabled)
+    window["encoder_combo"].update(visible=not audio_only and nvenc_enabled)
 
     # hide auto res button
     window["auto_res"].update(visible=not audio_only)
@@ -497,7 +530,7 @@ flipflop2 = False
 
 
 def main_app():
-    global just_clipped, last_values, input_audio_only_or_extract_audio
+    global just_clipped, last_values, input_audio_only_or_extract_audio, nvenc_enabled
     # debug thingies
     global flipflop1, flipflop2
 

@@ -281,8 +281,8 @@ layout = [
 window = sg.Window("Clippy", layout, icon=SCISSORS_ICON, finalize=True)
 
 
-def get_clip_length_text(start_time, end_time):
-    """get clip length text"""
+def get_clip_length_text(start_time, end_time) -> tuple[str, str]:
+    """Get clip length text."""
     clip_length = end_time - start_time
     print(clip_length, start_time, end_time)
 

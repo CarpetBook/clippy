@@ -548,9 +548,10 @@ def start_data_validation(values):
         return False
 
     # resolution field; shouldn't ever trigger
-    if values["resolution"] not in RES_OPTIONS:
-        show_custom_error("Invalid resolution.")
-        return False
+    assert values["resolution"] in RES_OPTIONS, "Invalid resolution."
+
+    # encoder field; shouldn't ever trigger
+    assert values["encoder_combo"] in ENCODER_CHOICE, "Invalid encoder."
 
     # time fields
     start_time = is_time_valid(values["start_time_input"])

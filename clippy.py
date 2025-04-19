@@ -486,10 +486,11 @@ def done_message(output_file):
 def run_yielding_ffmpeg_exc(cmd, window, duration):
     """Runs run_yielding_ffmpeg and catches RuntimeError (ffmpeg yield progress throws runtime error for some reason)."""
     try:
-        fp.run_yielding_ffmpeg(cmd, window, duration)
-    except RuntimeError as e:
+        for progress in fp.run_yielding_ffmpeg(cmd, window, duration):
+            continue  # idk
+    except Exception as e:
         show_custom_error(e)
-        window.write_event_value("ffmpeg_done", "error")
+        window.write_event_value("ffmpeg_done", e)
         return
 
 

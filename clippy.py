@@ -278,7 +278,9 @@ layout = [
 ]
 
 # Create the Window
-window = sg.Window("Clippy", layout, icon=SCISSORS_ICON, finalize=True)
+window = sg.Window(
+    "Clippy", layout, icon=SCISSORS_ICON, finalize=True, return_keyboard_events=True
+)
 
 
 def get_clip_length_text(start_time, end_time) -> tuple[str, str]:

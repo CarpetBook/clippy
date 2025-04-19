@@ -68,9 +68,21 @@ AUD_CONTAINERS = [
 ]
 
 ENCODER_CHOICE = [
-    "CPU (slow, small file)",
-    "NVENC (fast, big file)",
+    "CPU",
+    "Remux",
 ]
+
+# insert nvenc if available
+if nvenc_enabled:
+    ENCODER_CHOICE.insert(1, "NVENC")
+
+# todo
+# VID_CONTAINERS = [
+#     "mp4",
+#     "mkv",
+#     "mov",
+#     "webm",
+# ]
 
 ffmpeg_loc = "bin/ffmpeg.exe"
 ffprobe_loc = "bin/ffprobe.exe"

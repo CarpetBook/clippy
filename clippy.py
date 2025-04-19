@@ -405,6 +405,8 @@ def update_extension_on_format(window, values):
 def auto_resolution_fps(window, values):
     """Solve for best resolution and FPS according to the input file."""
     # get reso_y and fps
+    if window["input_file"].metadata is None:
+        return
     source_reso = window["input_file"].metadata.get("reso_y")
     source_fps = window["input_file"].metadata.get("fps")
 

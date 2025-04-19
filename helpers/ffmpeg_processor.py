@@ -33,6 +33,8 @@ def construct_from_sg_values(values):
         enc = "libx264"
     elif "NVENC" in enc:
         enc = "h264_nvenc"
+    elif "Remux" in enc:
+        enc = "copy"
 
     input = ffmpeg.input(
         values["input_file"],
@@ -44,7 +46,7 @@ def construct_from_sg_values(values):
 
     output = None
 
-    if not audio_only:
+    if not audio_only and not enc == "copy":
         video = input.video
         scale = video.filter(
             "scale", -2, reso_y
@@ -56,10 +58,17 @@ def construct_from_sg_values(values):
             values["output_file"],
             **{"c:v": enc, "r": fps},
         )
-    else:
+    elif audio_only:
         output = ffmpeg.output(
             audio,
             values["output_file"],
+        )
+    else:  # remuxing
+        input = ffmpeg.input(values["input_file"], )
+        output = ffmpeg.output(
+            input,
+            values["output_file"],
+            **{"map": "0", "c:v": "copy", "c:a": "copy", "c:s": "copy"},
         )
 
     if output is None:

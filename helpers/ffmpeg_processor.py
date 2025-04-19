@@ -11,6 +11,9 @@ class TooManyStreamsException(Exception):
     pass
 
 
+current_ff = None
+
+
 def construct_from_sg_values(values):
     """Constructs ffmpeg command from values dictionary.
 
@@ -74,19 +77,33 @@ def construct_from_sg_values(values):
 
 
 def run_yielding_ffmpeg(cmd, window, duration):
+    global current_ff
     """Runs ffmpeg command yielding progress.
 
     Args:
         window (PySimpleGUI.Window): PySimpleGUI window object.
+        window (None): Yield percentage as a float.
 
     Yields:
-        int: Progress percentage.
+        float: Progress percentage.
     """
-    ff = fpy.FfmpegProgress(cmd)
-    for progress in ff.run_command_with_progress(
+    current_ff = fpy.FfmpegProgress(cmd)
+    for progress in current_ff.run_command_with_progress(
         popen_kwargs={"creationflags": CREATE_NO_WINDOW}, duration_override=duration
     ):
-        window.write_event_value("ffmpeg_progress", progress)
+        if window is None:
+            yield progress
+        else:
+            window.write_event_value("ffmpeg_progress", progress)
+
+    current_ff = None
+
+
+def cancel_current_ffmpeg():
+    global current_ff
+    """Cancels the current FFMPEG process."""
+    if current_ff is not None:
+        current_ff.quit_gracefully()
 
 
 # ffprobe things

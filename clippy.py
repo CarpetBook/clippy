@@ -169,6 +169,7 @@ layout = [
             disable_number_display=True,
             key="start_time_slider",
             enable_events=True,
+            metadata={"hovering": False, "duration": 100},
         ),
         sg.Slider(
             range=(0, 100),
@@ -179,6 +180,7 @@ layout = [
             disable_number_display=True,
             key="end_time_slider",
             enable_events=True,
+            metadata={"hovering": False, "duration": 100},
         ),
     ],
     [sg.Text("", key="clip_length", text_color="red")],
@@ -559,12 +561,29 @@ def check_for_fftools():
     check_for_ffprobe()
 
 
+def bind_slider_hover_events(window, slider_keys):
+    for key in slider_keys:
+        window[key].bind("<Enter>", f"-hovering")
+        window[key].bind("<Leave>", f"-not_hovering")
+
+
+slider_keys = ["start_time_slider", "end_time_slider"]
+bind_slider_hover_events(window, slider_keys)
+
+
 just_clipped = None
 last_values = defaults
 input_audio_only_or_extract_audio = False
 
 flipflop1 = False
 flipflop2 = False
+
+
+def handle_slider_hover_event(window, event):
+    slider_key, hover_state = event.split("-", 1)
+    is_hovering = hover_state == "hovering"
+    window[slider_key].metadata["hovering"] = is_hovering
+    # print(slider_key, is_hovering)
 
 
 def main_app():
@@ -646,8 +665,9 @@ def main_app():
                 }
                 duration = info["duration"]
                 window["start_time_slider"].update(range=(0, duration))
-                window["end_time_slider"].update(range=(0, duration))
-                window["end_time_slider"].update(value=duration)
+                window["end_time_slider"].update(range=(0, duration), value=duration)
+                window["start_time_slider"].metadata["duration"] = duration
+                window["end_time_slider"].metadata["duration"] = duration
                 window["end_time_input"].update(tc.get_time(duration))
             except fp.NoStreamsFoundException as e:
                 _er_str = "Input file seems to be empty:\n" + str(e)
@@ -761,6 +781,29 @@ def main_app():
         if event == "toggle_attach_image":
             flipflop2 = not flipflop2
             window["audio_to_video_check"].update(flipflop2)
+
+        if event.endswith("-hovering") or event.endswith("-not_hovering"):
+            handle_slider_hover_event(window, event)
+
+        if event == "MouseWheel:Up" or event == "MouseWheel:Down":
+            hovered_slider = None
+            for key in slider_keys:
+                if window[key].metadata.get("hovering", True):
+                    hovered_slider = window[key]
+                    break
+
+            if hovered_slider:
+                val = values[hovered_slider.key]
+                new_value = val + (1 if event == "MouseWheel:Up" else -1)
+                if new_value < 0:
+                    continue
+                if new_value > hovered_slider.metadata["duration"]:
+                    new_value = hovered_slider.metadata["duration"]
+                hovered_slider.update(value=new_value)
+                window[hovered_slider.key.replace("_slider", "_input")].update(
+                    tc.get_time(new_value)
+                )
+                update_clip_length_text(window)
 
         print(event)
         print(values)

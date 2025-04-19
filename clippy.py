@@ -233,15 +233,25 @@ layout = [
                     # sg.FileBrowse("Browse", key="browse_image", visible=False),
                 ],
                 [
-                    sg.Text("Encoder", key="encoder_label", visible=nvenc_enabled),
+                    sg.Text("Encoder", key="encoder_label", size=(11, 1)),
                     sg.Combo(
                         ENCODER_CHOICE,
                         default_value=ENCODER_CHOICE[0],
                         key="encoder_combo",
-                        visible=nvenc_enabled,
+                        enable_events=True,
+                        readonly=True,  # user cannot type into box
                     ),
                 ],
-                [sg.Button("Auto", key="auto_res")],
+                # [ # todo
+                #     sg.Text("Video container", key="container_label"),
+                #     sg.Combo(
+                #         VID_CONTAINERS,
+                #         default_value=defaults.get("export_container"),
+                #         key="export_container",
+                #         enable_events=True,
+                #     ),
+                # ],
+                [sg.Button("Auto Best", key="auto_res")],
             ],
         ),
         sg.Text(
@@ -416,6 +426,22 @@ def auto_resolution_fps(window, values):
 
     # set fps
     window["fps"].update(new_fps)
+
+
+def check_res_fps_visible(window, values):
+    """If remuxing, make resolution, warning, and fps invisible."""
+    if "Remux" in values["encoder_combo"]:
+        window["reso_label"].update(visible=False)
+        window["resolution"].update(visible=False)
+        window["res_warning"].update(visible=False)
+        window["fps_label"].update(visible=False)
+        window["fps"].update(visible=False)
+    else:
+        window["reso_label"].update(visible=True)
+        window["resolution"].update(visible=True)
+        window["res_warning"].update(visible=True)
+        window["fps_label"].update(visible=True)
+        window["fps"].update(visible=True)
 
 
 def show_custom_error(message, title="Oops!"):
@@ -690,6 +716,8 @@ def main_app():
             update_res_warning(window)
             # is audio only? if so, disable resolution
             toggle_export_options(window, input_audio_only_or_extract_audio)
+            # if remuxing, hide resolution and fps
+            check_res_fps_visible(window, values)
             # set clip file name
             filey = os.path.basename(values["input_file"])
             filey = os.path.splitext(filey)[0]
@@ -758,6 +786,10 @@ def main_app():
         if event == "auto_res":
             auto_resolution_fps(window, values)
             update_res_warning(window)
+
+        # if encoder choice is changed
+        if event == "encoder_combo":
+            check_res_fps_visible(window, values)
 
         # if audio_to_video_check is checked
         if event == "audio_to_video_check":

@@ -317,29 +317,32 @@ def get_status_text(progress, done=False):
 
 
 def update_res_warning(window):
-    _, values = window.read(timeout=1)  # have to update the values
+    _, values = window.read(timeout=1)  # Update the values
     selected_reso_y = int(values["resolution"].split("p")[0])
-    try:
-        selected_fps = int(values["fps"])
-    except ValueError:
-        selected_fps = 0
-    source_reso_y = window["res_warning"].metadata["reso_y"]
-    source_fps = window["res_warning"].metadata["fps"]
+    selected_fps = float(values.get("fps", 30))  # Use get() with default value
+    source_reso_y = window["res_warning"].metadata.get("reso_y")
+    source_fps = window["res_warning"].metadata.get("fps")
+
     if source_reso_y is None or source_fps is None:
         window["res_warning"].update("")
         return
-    builder = ""
+
+    warnings = []
     if selected_reso_y > source_reso_y:
-        builder += f"{selected_reso_y}p is higher than source {source_reso_y}p.\n"
+        warnings.append(f"{selected_reso_y}p is higher than source {source_reso_y}p.")
     if selected_fps > source_fps:
-        builder += f"{selected_fps:g} FPS is higher than source video ({source_fps:g})."
-    if builder == "":
+        warnings.append(
+            f"{selected_fps:g} FPS is higher than source video ({source_fps:g})."
+        )
+
+    if not warnings:
         window["res_warning"].update("")
     else:
-        builder = (
-            "Export settings are not ideal.\nThese settings may cause large file sizes:\n" + builder  # fmt: skip
+        warning_text = (
+            "Export settings are not ideal.\nThese settings may cause large file sizes:\n"
+            + "\n".join(warnings)
         )
-        window["res_warning"].update(builder)
+        window["res_warning"].update(warning_text)
 
 
 def toggle_export_options(window, audio_only):

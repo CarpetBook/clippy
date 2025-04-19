@@ -6,7 +6,7 @@ from helpers.version import CURRENT, CHANGES
 def open_about_window():
     about_layout = [
         [sg.Text("Clippy", font=("Arial", 20))],
-        [sg.Text("Video clipper/converter powered by FFMPEG.")],
+        [sg.Text("Video clipper tool powered by FFMPEG.")],
         [sg.Text("Made by hako")],
         [sg.Push()],
         [sg.Text(f"Version {CURRENT}")],

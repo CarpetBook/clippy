@@ -12,3 +12,7 @@ cur-ver.txt
 settings.json
 
 latest-release-env/*
+
+regression verification tests/*
+regression verification tests 2/*
+typings/*

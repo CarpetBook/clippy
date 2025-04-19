@@ -29,7 +29,7 @@ DEBUG = False
 def is_gpu_available():
     try:
         # Try running 'nvidia-smi' - it should run successfully if NVIDIA drivers are installed and a GPU is present.
-        subprocess.check_output(
+        _ = subprocess.check_output(
             ["nvidia-smi"], creationflags=subprocess.CREATE_NO_WINDOW
         )
         return True
@@ -261,18 +261,22 @@ def get_clip_length_text(start_time, end_time):
     """get clip length text"""
     clip_length = end_time - start_time
     print(clip_length, start_time, end_time)
+
     if clip_length == 0:
         return "red", "Clip is zero seconds long!"
     elif clip_length < 0:
         return "red", "End time is before start time!"
+
     return "black", f"Clip length: {tc.get_time(clip_length)}"
 
 
 def update_clip_length_text(window):
     _, values = window.read(timeout=1)  # have to update the values
+
     color, clip_len = get_clip_length_text(
         values["start_time_slider"], values["end_time_slider"]
     )
+
     window["clip_length"].update(clip_len, text_color=color)
     # do not allow end time to be before start time
     if color == "red":

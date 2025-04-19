@@ -785,7 +785,7 @@ def main_app():
             window["progressbar"].update(0)
             window["start"].update(disabled=False)
             if values["ffmpeg_done"] == "error":
-                traceback.print_exc(e)
+                traceback.print_exc()
             joined_path = os.path.join(values["clip_loc"], values["output_file"])
             done_message(joined_path)
             just_clipped = values["output_file"] + "." + values["export_container"]

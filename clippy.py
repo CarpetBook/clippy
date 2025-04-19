@@ -7,6 +7,7 @@ import os
 import re
 import humanize
 import json
+import subprocess
 
 from ffmpeg import Error as FfmpegError
 
@@ -23,8 +24,6 @@ from helpers.about_window import open_about_window
 sg.theme("BrightColors")  # Add too much color
 
 DEBUG = False
-
-import subprocess
 
 
 def is_gpu_available():

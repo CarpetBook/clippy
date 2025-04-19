@@ -192,7 +192,7 @@ layout = [
                 #     sg.Checkbox("Export as audio only", key="audio_only_check", enable_events=True),
                 # ],
                 [
-                    sg.Text("Resolution", key="reso_label"),
+                    sg.Text("Resolution", key="reso_label", size=(11, 1)),
                     sg.Combo(
                         RES_OPTIONS,
                         default_value=defaults.get("resolution"),
@@ -210,9 +210,9 @@ layout = [
                     # ),
                 ],  # default to 720p
                 [
-                    sg.Text("FPS", key="fps_label"),
+                    sg.Text("FPS", key="fps_label", size=(11, 1)),
                     sg.InputText(
-                        defaults.get("fps"), size=(5, 1), key="fps", enable_events=True
+                        defaults.get("fps"), size=(8, 1), key="fps", enable_events=True
                     ),
                     # only visible when audio_to_video_check is checked
                     sg.Text("Audio output", key="container_label", visible=False),
@@ -257,7 +257,7 @@ layout = [
         sg.Text(
             "",
             key="res_warning",
-            text_color="red",
+            text_color="dark red",
             metadata={"reso_y": 10000, "fps": 1000},
         ),
     ],
@@ -266,7 +266,7 @@ layout = [
             "✅Start",
             key="start",
         ),
-        sg.Button("❌Cancel", key="cancel"),
+        sg.Button("❌Close", key="cancel"),
     ],
     [
         sg.ProgressBar(100, orientation="h", size=(20, 20), key="progressbar"),

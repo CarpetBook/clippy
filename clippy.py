@@ -598,8 +598,8 @@ def check_for_fftools():
 
 def bind_slider_hover_events(window, slider_keys):
     for key in slider_keys:
-        window[key].bind("<Enter>", f"-hovering")
-        window[key].bind("<Leave>", f"-not_hovering")
+        window[key].bind("<Enter>", "-hovering")
+        window[key].bind("<Leave>", "-not_hovering")
 
 
 slider_keys = ["start_time_slider", "end_time_slider"]

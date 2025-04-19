@@ -300,8 +300,8 @@ def update_clip_length_text(window):
     color, clip_len = get_clip_length_text(
         values["start_time_slider"], values["end_time_slider"]
     )
-
     window["clip_length"].update(clip_len, text_color=color)
+
     # do not allow end time to be before start time
     if color == "red":
         window["start"].update(disabled=True)

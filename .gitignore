@@ -18,3 +18,5 @@ regression verification tests 2/*
 typings/*
 regression_processor.ipynb
 regression_summary.csv
+
+clippy.py.bak

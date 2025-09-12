@@ -1,8 +1,13 @@
+# TODO: (Overall Structure) Refactor this script into a class (e.g., `ClippyApp`)
+# - Encapsulate state (settings, UI elements, ffmpeg paths, flags like nvenc_enabled) as instance attributes.
+# - Convert functions (`is_gpu_available`, `save_settings`, `update_clip_length_text`, `main_app`, etc.) into methods.
+# - This will help manage complexity, reduce global variable usage, and improve testability.
 import traceback
 import PySimpleGUI as sg
 
 import os
 
+# TODO: (Code Comments) Remove obsolete commented-out code.
 # import sys
 import re
 import humanize
@@ -16,8 +21,10 @@ from helpers import ffmpeg_processor as fp
 from helpers import icon
 from helpers.about_window import open_about_window
 
+# TODO: (Code Comments) Remove obsolete commented-out code.
 # from helpers.tooltips import tooltip
 
+# TODO: (Code Comments) Remove obsolete commented-out code.
 # import GPUtil
 # gputil is OLD and unmaintained
 
@@ -38,6 +45,7 @@ def is_gpu_available():
         return False
 
 
+# TODO: (Globals/State) Move `nvenc_enabled` into the main app class as an attribute.
 nvenc_enabled = False
 try:
     # gpu detection for nvenc
@@ -45,6 +53,7 @@ try:
         nvenc_enabled = True
     if DEBUG:
         sg.popup_auto_close("Detected a GPU.")
+# TODO: (Error Handling) Catch more specific exceptions if possible, instead of generic Exception.
 except Exception as e:
     sg.popup_non_blocking(f"Failed to detect GPUs in system.\n{e}")
 
@@ -76,6 +85,7 @@ ENCODER_CHOICE = [
 if nvenc_enabled:
     ENCODER_CHOICE.insert(1, "NVENC")
 
+# TODO: (Code Comments) Remove obsolete commented-out code or clarify its purpose if it's a future feature.
 # todo
 # VID_CONTAINERS = [
 #     "mp4",
@@ -84,6 +94,7 @@ if nvenc_enabled:
 #     "webm",
 # ]
 
+# TODO: (External Dependencies/Globals) Make ffmpeg/ffprobe paths configurable (settings/PATH search) instead of hardcoded globals.
 ffmpeg_loc = "bin/ffmpeg.exe"
 ffprobe_loc = "bin/ffprobe.exe"
 SCISSORS_ICON = icon.SCISSORS_ICON
@@ -110,6 +121,7 @@ try:
     with open("settings.json", "r") as f:
         defaults = json.loads(f.read())
 
+    # TODO: (Settings Management) Extract this validation logic into a separate function `validate_settings(settings_dict)`.
     # check if all are valid
     if not os.path.exists(defaults.get("clip_loc", "")):
         defaults["clip_loc"] = ""
@@ -119,7 +131,9 @@ try:
 
     if not defaults.get("fps").isdigit():
         defaults["fps"] = "30"
+# TODO: (Error Handling) Catch specific exceptions like FileNotFoundError, json.JSONDecodeError, KeyError, ValueError instead of generic Exception.
 except Exception as e:
+    # TODO: (Logging) Replace print with logging.error(e, exc_info=True)
     print(e)
     write_new_settings()
     defaults = builtindefaults
@@ -132,6 +146,8 @@ def save_settings(values):
 
 
 # All the stuff inside your window.
+# TODO: (GUI Logic) Consider breaking this large layout definition into smaller parts or helper functions.
+# TODO: (Constants) Define constants for UI element keys (e.g., "input_file", "clip_loc") instead of using strings directly.
 layout = [
     [
         sg.Text("File to be clipped", size=(15, 1)),
@@ -183,11 +199,13 @@ layout = [
             metadata={"hovering": False, "duration": 100},
         ),
     ],
+    # TODO: (Constants) Define constants for colors like "red".
     [sg.Text("", key="clip_length", text_color="red")],
     [
         sg.Frame(
             "Export settings",
             layout=[
+                # TODO: (Code Comments) Remove obsolete commented-out code.
                 # [
                 #     sg.Checkbox("Export as audio only", key="audio_only_check", enable_events=True),
                 # ],
@@ -199,6 +217,7 @@ layout = [
                         key="resolution",
                         enable_events=True,
                     ),
+                    # TODO: (Code Comments) Remove obsolete commented-out code.
                     # # only visible when attaching image to audio
                     # sg.Checkbox(
                     #     "Turn audio into video",
@@ -214,6 +233,7 @@ layout = [
                     sg.InputText(
                         defaults.get("fps"), size=(8, 1), key="fps", enable_events=True
                     ),
+                    # TODO: (Code Comments) Remove obsolete commented-out code.
                     # only visible when audio_to_video_check is checked
                     sg.Text("Audio output", key="container_label", visible=False),
                     sg.Combo(
@@ -223,6 +243,7 @@ layout = [
                         visible=False,
                         enable_events=True,
                     ),
+                    # TODO: (Code Comments) Remove obsolete commented-out code.
                     # # only visible when audio_to_video_check is checked
                     # sg.Text("Image to attach", key="image_label", visible=False),
                     # sg.InputText(
@@ -242,6 +263,7 @@ layout = [
                         readonly=True,  # user cannot type into box
                     ),
                 ],
+                # TODO: (Code Comments) Remove obsolete commented-out code or clarify purpose.
                 # [ # todo
                 #     sg.Text("Video container", key="container_label"),
                 #     sg.Combo(
@@ -274,6 +296,7 @@ layout = [
         sg.Push(),
         sg.Button("?", key="about"),
     ],
+    # TODO: (Code Comments) Remove obsolete commented-out code (appears to be debug controls).
     # [sg.Button("Toggle audio or video export settings", key="toggle_export"), sg.Button("Toggle attach image", key="toggle_attach_image")],
 ]
 
@@ -286,17 +309,22 @@ window = sg.Window(
 def get_clip_length_text(start_time, end_time) -> tuple[str, str]:
     """Get clip length text."""
     clip_length = end_time - start_time
+    # TODO: (Logging) Replace print with logging.debug(...)
     print(clip_length, start_time, end_time)
 
     if clip_length == 0:
+        # TODO: (Constants) Define constants for colors like "red".
         return "red", "Clip is zero seconds long!"
     elif clip_length < 0:
+        # TODO: (Constants) Define constants for colors like "red".
         return "red", "End time is before start time!"
 
+    # TODO: (Constants) Define constants for colors like "black".
     return "black", f"Clip length: {tc.get_time(clip_length)}"
 
 
 def update_clip_length_text(window):
+    # TODO: (GUI Logic) Pass `values` dictionary as an argument instead of re-reading here if called from event loop.
     _, values = window.read(timeout=1)  # have to update the values
 
     color, clip_len = get_clip_length_text(
@@ -305,6 +333,7 @@ def update_clip_length_text(window):
     window["clip_length"].update(clip_len, text_color=color)
 
     # do not allow end time to be before start time
+    # TODO: (Constants) Use defined constant for "red".
     if color == "red":
         window["start"].update(disabled=True)
     else:
@@ -319,6 +348,7 @@ def get_status_text(progress, done=False):
 
 
 def update_res_warning(window):
+    # TODO: (GUI Logic) Pass `values` dictionary as an argument instead of re-reading here if called from event loop.
     _, values = window.read(timeout=1)  # Update the values
     selected_reso_y = int(values["resolution"].split("p")[0])
     selected_fps = float(values.get("fps", 30))  # Use get() with default value
@@ -349,6 +379,7 @@ def update_res_warning(window):
 
 def toggle_export_options(window, audio_only):
     """Toggle export options."""
+    # TODO: (Globals) Remove global; access `nvenc_enabled` via class instance attribute (self.nvenc_enabled).
     global nvenc_enabled
     # hide resolution and fps if audio
     window["reso_label"].update(visible=not audio_only)
@@ -366,8 +397,10 @@ def toggle_export_options(window, audio_only):
     # show audio containers and audio_to_video_check
     window["container_label"].update(visible=audio_only)
     window["export_container"].update(visible=audio_only)
+    # TODO: (Code Comments) Remove obsolete commented-out code.
     # window["audio_to_video_check"].update(visible=audio_only)
 
+    # TODO: (Code Comments) Remove obsolete commented-out code.
     # disable audio container if audio to video
     # audio_to_video = window["audio_to_video_check"].get()
     # window["export_container"].update(disabled=audio_to_video)
@@ -387,9 +420,11 @@ def toggle_attach_image(audio_to_video):
 
 def update_extension_on_format(window, values):
     """Update extension on format change."""
+    # TODO: (Path Manipulation) Use os.path.splitext for more robust extension checking/manipulation.
     if values["output_file"].split(".")[-1] in AUD_CONTAINERS + ["mp4"]:
         # replace extension
         new_output_file = (  # this code is fugly
+            # TODO: (Path Manipulation) Use os.path.splitext and os.path.join for cleaner path construction.
             ".".join(values["output_file"].split(".")[:-1]) + f".{values['export_container']}"  # fmt: skip
         )
         window["output_file"].update(new_output_file)
@@ -437,6 +472,7 @@ def auto_resolution_fps(window, values):
 
 def check_res_fps_visible(window, values):
     """If remuxing, make resolution, warning, and fps invisible."""
+    # TODO: (Constants) Define constant for "Remux".
     if "Remux" in values["encoder_combo"]:
         window["reso_label"].update(visible=False)
         window["resolution"].update(visible=False)
@@ -488,6 +524,7 @@ def run_yielding_ffmpeg_exc(cmd, window, duration):
     try:
         for progress in fp.run_yielding_ffmpeg(cmd, window, duration):
             continue  # idk
+# TODO: (Error Handling) Catch specific exception `RuntimeError` mentioned in original docstring, and potentially others if known. Avoid generic Exception.
     except Exception as e:
         show_custom_error(e)
         window.write_event_value("ffmpeg_done", e)
@@ -505,6 +542,7 @@ def is_fps_valid(fps):
     # fps is float
     try:
         return float(fps)
+    # TODO: (Error Handling) Catch specific exception `ValueError` instead of generic Exception.
     except Exception:
         return False
 
@@ -565,7 +603,9 @@ def start_data_validation(values):
     return True
 
 
+# TODO: (External Dependencies) Refactor this check. Integrate path finding/validation into the app class initialization.
 def check_for_ffmpeg():
+    # TODO: (Globals) Remove global; manage path within the app class.
     global ffmpeg_loc
     if os.path.exists(ffmpeg_loc):
         return
@@ -575,10 +615,13 @@ def check_for_ffmpeg():
     show_custom_error(
         "Couldn't find ffmpeg.exe. Please make sure you extracted the 'bin' folder into the same folder as clippy.exe."
     )
+    # TODO: (Application Exit) Avoid `exit(1)`. Instead, disable UI elements and show an error message in the GUI.
     exit(1)
 
 
+# TODO: (External Dependencies) Refactor this check. Integrate path finding/validation into the app class initialization.
 def check_for_ffprobe():
+    # TODO: (Globals) Remove global; manage path within the app class.
     global ffprobe_loc
     if os.path.exists(ffprobe_loc):
         return
@@ -588,6 +631,7 @@ def check_for_ffprobe():
     show_custom_error(
         "Couldn't find ffprobe.exe. Please make sure you extracted the 'bin' folder into the same folder as clippy.exe."
     )
+    # TODO: (Application Exit) Avoid `exit(1)`. Instead, disable UI elements and show an error message in the GUI.
     exit(1)
 
 
@@ -622,13 +666,18 @@ def handle_slider_hover_event(window, event):
 
 
 def main_app():
+    # TODO: (Globals/State Management) Eliminate globals; manage these as instance attributes (e.g., self.just_clipped, self.last_values).
     global just_clipped, last_values, input_audio_only_or_extract_audio, nvenc_enabled
+    # TODO: (Debug Code/Globals) Remove debug flags and related global statement.
     # debug thingies
     global flipflop1, flipflop2
 
+    # TODO: (Event Handling) Refactor this large loop. Consider mapping event keys to handler methods.
+    # TODO: (Constants) Define constants for event keys (e.g., "start", "input_file") used below.
     # main window event loop
     while True:
         event, values = window.read()
+        # TODO: (Logging) Replace print with logging.debug(values)
         print(values)
         if values is not None:
             last_values = values
@@ -709,11 +758,13 @@ def main_app():
                 show_custom_error(_er_str)
                 window["input_file"].update("")
                 continue
+            # TODO: (Error Handling) Ensure error message extraction `str(e)` is sufficient and correct for FfmpegError.
             except FfmpegError as e:
                 _er_str = "Input file seems to be broken:\n" + str(e.stderr, "utf-8")
                 show_custom_error(_er_str)
                 window["input_file"].update("")
                 continue
+            # TODO: (Error Handling) Catch more specific exceptions if possible (e.g., FileNotFoundError?) instead of generic Exception.
             except Exception as e:
                 _er_str = "Error opening input file:\n" + str(e)
                 show_custom_error(_er_str)
@@ -814,6 +865,7 @@ def main_app():
         if event == "about":
             open_about_window()
 
+        # TODO: (Debug Code) Remove debug event handlers and associated flags (`flipflop1`, `flipflop2`).
         # debug events
         if event == "toggle_export":
             flipflop1 = not flipflop1
@@ -846,7 +898,9 @@ def main_app():
                 )
                 update_clip_length_text(window)
 
+        # TODO: (Logging) Replace print with logging.debug(...)
         print(event)
+        # TODO: (Logging) Replace print with logging.debug(...)
         print(values)
 
 

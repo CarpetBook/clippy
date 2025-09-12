@@ -1,6 +1,6 @@
 humanize
 
-ffmpeg
+ffmpeg_python
 ffmpeg_progress_yield
 
 FreeSimpleGUI

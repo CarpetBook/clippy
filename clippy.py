@@ -9,7 +9,7 @@ import humanize
 import json
 import subprocess
 
-from ffmpeg import Error as FfmpegError
+# from ffmpeg import Error as FfmpegError
 
 from helpers import timecalc as tc
 from helpers import ffmpeg_processor as fp

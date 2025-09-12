@@ -1,4 +1,4 @@
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 from helpers.icon import SCISSORS_ICON
 from helpers.version import CURRENT, CHANGES
 

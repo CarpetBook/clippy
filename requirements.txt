@@ -3,4 +3,4 @@ humanize
 ffmpeg
 ffmpeg_progress_yield
 
-PySimpleGUI
+FreeSimpleGUI

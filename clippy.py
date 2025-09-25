@@ -15,6 +15,7 @@ from helpers import timecalc as tc
 from helpers import ffmpeg_processor as fp
 from helpers import icon
 from helpers.about_window import open_about_window
+from helpers.version import CURRENT as CURRENT_VERSION
 
 # from helpers.tooltips import tooltip
 
@@ -279,7 +280,7 @@ layout = [
 
 # Create the Window
 window = sg.Window(
-    "Clippy", layout, icon=SCISSORS_ICON, finalize=True, return_keyboard_events=True
+    f"Clippy {CURRENT_VERSION}", layout, icon=SCISSORS_ICON, finalize=True, return_keyboard_events=True
 )
 
 

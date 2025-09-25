@@ -665,6 +665,8 @@ def main_app():
             )
             if not values["output_file"].endswith(_extension):
                 values["output_file"] += f".{_extension}"
+                # also update output box to fix done message not showing file size
+                window["output_file"].update(values["output_file"])
             # correct output file path with clip_loc
             values["output_file"] = os.path.join(
                 values["clip_loc"], values["output_file"]

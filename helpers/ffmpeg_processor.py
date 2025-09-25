@@ -30,9 +30,9 @@ def construct_from_sg_values(values):
     enc = values["encoder_combo"]
 
     if "CPU" in enc:
-        enc = "libx264"
+        enc = "libx265"
     elif "NVENC" in enc:
-        enc = "h264_nvenc"
+        enc = "hevc_nvenc"
     elif "Remux" in enc:
         enc = "copy"
 

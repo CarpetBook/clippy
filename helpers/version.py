@@ -1,5 +1,9 @@
-CURRENT = "1.2.8"
+CURRENT = "1.2.9"
 CHANGES = """
+(1.2.9) Use more efficient HEVC format. Should make smaller file sizes.
+Fix bug where "Done!" message wouldn't show output file size.
+Update Discord file size limit (fuck discord).
+
 (1.2.8) Small facelift. Fixed some crashes.
 
 (1.2.4) Start and end time sliders can now be scrolled with the mouse wheel.

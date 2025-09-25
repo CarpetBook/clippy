@@ -10,6 +10,7 @@ helpers/__pycache__/*
 settings.txt
 cur-ver.txt
 settings.json
+ffmpeg_update/*
 
 latest-release-env/*
 

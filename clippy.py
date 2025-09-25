@@ -91,7 +91,7 @@ SCISSORS_ICON = icon.SCISSORS_ICON
 
 SPECIAL_CHAR_CHECK = r"[<>:" "/\\|?*]"
 
-DISCORD_LIMIT = 25 * 1024 * 1024
+DISCORD_LIMIT = 10 * 1024 * 1024
 
 
 builtindefaults = {
